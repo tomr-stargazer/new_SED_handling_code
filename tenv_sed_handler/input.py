@@ -5,6 +5,7 @@ Initial functions (simple) to correctly read in the SED files.
 
 import numpy as np
 import astropy.table
+import astropy.units as u
 
 
 def read_file_17_SED(filename):
@@ -40,13 +41,21 @@ def tabulate_file_17_SED(data_array):
     return table
 
 
-
 def read_file_cono16_SED(filename):
     """ Reads an SED from file, for the 'cono' case. """
 
-    # data = 
+    data = np.loadtxt(filename, skiprows=3)
+    return data
 
-    pass
 
+def tabulate_file_cono16_SED(data_array):
+    table = astropy.table.Table()
 
-# def 
+    table['frequency'] = data_array[:,0] * u.Hz
+    table['wavelength'] = data_array[:,1] * u.um
+    table['H'] = data_array[:,2]
+    table['??'] = data_array[:,3]
+    table['luminosity'] = data_array[:,4] * u.erg/u.s
+
+    return table
+
