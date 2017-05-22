@@ -31,7 +31,9 @@ list_of_inclinations = [b for (a, b) in list_of_angle_pairs]
 set_of_opening_angles = np.sort(list(set(list_of_opening_angles)))
 set_of_inclinations = np.sort(list(set(list_of_inclinations)))
 
-fig = plt.figure(figsize=(10,7))
+fig = plt.figure(figsize=(12,5))
+
+linestyles =  ['-', '--', ":"]
 
 for x, theta in enumerate(set_of_opening_angles):
 
@@ -47,14 +49,19 @@ for x, theta in enumerate(set_of_opening_angles):
 
 		luminosity_lsun = luminosity.to(u.Lsun)
 
-		ax = fig.add_subplot(3,3, 1 + x + 3*y)
+		ax = fig.add_subplot(1,3, 1 + x)
 
 		# plt.plot(thing[:,1], thing[:,4]*thing[:,0])
-		ax.plot(wavelength, luminosity)
+		ax.plot(wavelength, luminosity, linestyles[y], label='$i={0}^\circ$'.format(i))
+		ax.set_title(r"Opening angle $\theta={0}^\circ$".format(theta))
 		ax.loglog()
-		ax.set_xlim(0.1, 1e4)
+		ax.set_xlim(0.3, 3e3)
+		ax.set_ylim(1e28, 1.2e34)
 		ax.set_xlabel(r"$\lambda$ ($\mu$m)")
-		ax.set_ylabel(r"$\nu L_\nu$")
+		ax.set_ylabel(r"$\lambda L_\lambda$ (erg s$^{-1}$)")
+		ax.legend(loc='lower right')
 
 
 plt.show()
+
+fig.savefig("cono_test_successful.pdf", bbox_inches='tight')
