@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 import astropy.units as u
 import astropy.constants as c
 
+from tenv_sed_handler.output import read_file_cono16_SED, tabulate_file_cono16_SED
+
 file_path = os.path.expanduser("~/Documents/Code/Nuria_SED_code/dir_object/cono")
 
 list_of_16s = glob.glob(os.path.join(file_path,"16.*"))
@@ -37,29 +39,29 @@ linestyles =  ['-', '--', ":"]
 
 for x, theta in enumerate(set_of_opening_angles):
 
-	for y, i in enumerate(set_of_inclinations):
+    for y, i in enumerate(set_of_inclinations):
 
-		relevant_string_bit = 'h'+theta+'.010.'+i
-		relevant_filename = [x for x in list_of_16s if relevant_string_bit in x][0]
+        relevant_string_bit = 'h'+theta+'.010.'+i
+        relevant_filename = [x for x in list_of_16s if relevant_string_bit in x][0]
 
-		relevant_data = np.loadtxt(os.path.join(relevant_filename), skiprows=3)
-		wavelength = relevant_data[:,1] * u.um
-		luminosity = relevant_data[:,4] * u.erg * u.s**-1
-		frequency = relevant_data[:,0] 
+        table = tabulate_file_cono16_SED(read_file_cono16_SED(relevant_filename))
+        # old way, without a dependency on tenv_sed_handler.output:
+        # relevant_data = np.loadtxt(os.path.join(relevant_filename), skiprows=3)
+        # wavelength = relevant_data[:,1] * u.um
+        # luminosity = relevant_data[:,4] * u.erg * u.s**-1
+        # frequency = relevant_data[:,0] 
+        # luminosity_lsun = luminosity.to(u.Lsun)
 
-		luminosity_lsun = luminosity.to(u.Lsun)
+        ax = fig.add_subplot(1,3, 1 + x)
 
-		ax = fig.add_subplot(1,3, 1 + x)
-
-		# plt.plot(thing[:,1], thing[:,4]*thing[:,0])
-		ax.plot(wavelength, luminosity, linestyles[y], label='$i={0}^\circ$'.format(i))
-		ax.set_title(r"Opening angle $\theta={0}^\circ$".format(theta))
-		ax.loglog()
-		ax.set_xlim(0.3, 3e3)
-		ax.set_ylim(1e28, 1.2e34)
-		ax.set_xlabel(r"$\lambda$ ($\mu$m)")
-		ax.set_ylabel(r"$\lambda L_\lambda$ (erg s$^{-1}$)")
-		ax.legend(loc='lower right')
+        ax.plot(table['wavelength'], table['luminosity'], linestyles[y], label='$i={0}^\circ$'.format(i))
+        ax.set_title(r"Opening angle $\theta={0}^\circ$".format(theta))
+        ax.loglog()
+        ax.set_xlim(0.3, 3e3)
+        ax.set_ylim(1e28, 1.2e34)
+        ax.set_xlabel(r"$\lambda$ ($\mu$m)")
+        ax.set_ylabel(r"$\lambda L_\lambda$ (erg s$^{-1}$)")
+        ax.legend(loc='lower right')
 
 
 plt.show()
